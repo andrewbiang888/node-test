@@ -1,0 +1,20 @@
+{
+  "name": "node-test",
+  "version": "0.0.1",
+  "description": "billy test",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "all": "concurrently \"node index\" \"node book/index\" \"node user/index\""
+  },
+  "author": "Andrew Erickson",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^3.5.1",
+    "finalhandler": "^1.1.1",
+    "http-hash-router": "^1.1.0",
+    "http-proxy": "^1.17.0",
+    "morgan": "^1.9.0",
+    "serve-static": "^1.13.2"
+  }
+}

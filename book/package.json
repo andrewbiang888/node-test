@@ -1,0 +1,18 @@
+{
+  "name": "book-microservice",
+  "version": "0.0.1",
+  "description": "Microservice for /book data",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Andrew Erickson",
+  "license": "ISC",
+  "dependencies": {
+    "finalhandler": "^1.1.1",
+    "http-hash-router": "^1.1.0",
+    "serve-static": "^1.13.2",
+    "sqlite3": "^4.0.0",
+    "sqlstring": "^2.3.1"
+  }
+}

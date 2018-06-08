@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Book Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    [v-cloak] { display: none; }
+  </style>
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <div id="app" v-cloak>
+    <div>
+      <a href="/">Home</a>
+    </div>
+    <h1>Book home</h1>
+    <p>Add new book here:</p>
+    <div v-if="message" style="color: red;">{{message}}</div>
+    <div v-if="positivemessage" style="color: green;">{{positivemessage}}</div>
+    <br>
+    <div class="form">
+      Book name:<br>
+      <input type="text" name="name" v-model="newbook.name"><br>
+      Genre:<br>
+      <input type="text" name="genre" v-model="newbook.genre">
+      <button @click="submitBook">Submit</button>
+    </div>
+    <div>
+      <h2>Read, Update, and Delete data here:</h2>
+      <div v-if="{books}">
+        <p>no book entries yet</p>
+      </div>
+      <div class="books" v-for="(book, i) in books">
+        <h3>Entry {{ i + 1 }}:</h3>
+        <div>
+          <label for="bookname">Book Name:</label>
+          <input id="bookname" v-model="book.name">
+        </div>
+        <div>
+          <label for="bookgenre">Book Genre:</label>
+          <input id="bookgenre" v-model="book.genre">
+        </div>
+        <button @click="updateBook(book.id, book.name, book.genre)">Update</button>
+        <button @click="deleteBook(book.id, book.name, book.genre, i)">Delete</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    function fetchData(url, cb) {
+      var req = new XMLHttpRequest();
+      req.open('GET', url, true);
+      req.onreadystatechange = function() {
+        if (req.readyState === XMLHttpRequest.DONE && req.status === 200) {
+          // console.log(req)
+          var data = JSON.parse(req.responseText)
+          if (data.length == 0) data = null
+          cb(data);
+        }
+      };
+      req.send();
+    }
+    function buildVue(data) {
+      var app = new Vue({
+        el: '#app',
+        data: {
+          books: data,
+          newbook: {
+            name: '',
+            genre: ''
+          },
+          message: null,
+          positivemessage: null
+        },
+        methods: {
+          submitBook: function () {
+            var self = this
+            var data = JSON.stringify({
+              name: self.newbook.name,
+              genre: self.newbook.genre
+            });
+            if (self.newbook.name != '' && self.newbook.genre != '') {
+              async function sendit () {
+                var postResponse = await fetch('/book/create', {
+                  method: 'POST',
+                  headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                  },
+                  body: data
+                }).then(function (res) {
+                  return res.json()    
+                }).then( function (data) {
+                  if (data.message) self.message = data.message
+                  if (data.positivemessage) self.positivemessage = data.positivemessage
+                })
+              }
+              sendit()
+              self.newbook.name = ''
+              self.newbook.genre = ''
+            } else {
+              alert('please provide a name and genre')
+            }
+          },
+          updateBook: function (id, name, genre) {
+            var self = this
+            var data = JSON.stringify({
+              id,
+              name,
+              genre
+            });
+            // console.log(data)
+            fetch('/book/update', {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+              body: data
+            }).then(function (res) {
+              return res.json()    
+            }).then( function (data) {
+              if (data.message) self.message = data.message
+              if (data.positivemessage) self.positivemessage = data.positivemessage
+            })
+          },
+          deleteBook: function (id, name, genre, i) {
+            var self = this
+            var data = JSON.stringify({
+              id,
+              name,
+              genre
+            });
+            fetch('/book/delete', {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+              body: data
+            }).then(function (res) {
+              return res.json()    
+            }).then( function (data) {
+              if (data.message) self.message = data.message
+              if (data.positivemessage) self.positivemessage = data.positivemessage
+            })
+            self.books.splice(i, 1)
+          }
+        }
+      })
+    }
+    fetchData('/book/read', buildVue);
+  </script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+CREATE TABLE book (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name varchar(255),
+  genre varchar(255)
+);
+
+CREATE TABLE user (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name varchar(255),
+  email varchar(255)
+);
